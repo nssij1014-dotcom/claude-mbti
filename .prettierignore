@@ -1,0 +1,8 @@
+.next
+node_modules
+dev.db
+package-lock.json
+
+# 마크다운 문서는 손으로 다듬은 표/줄바꿈을 유지합니다. 특히 MBTI_PRD.md는 CLAUDE.md 12장에
+# 따라 코드 작업 중 임의로 내용을 바꾸면 안 되는 기획 확정 문서입니다.
+*.md

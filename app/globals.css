@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafaf9;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Malgun Gothic",
+    "맑은 고딕", sans-serif;
+}
+
+/* PRD 5.3: v1 기본은 라이트 테마 고정(다크모드는 v2 검토 대상). */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}

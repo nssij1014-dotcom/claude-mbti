@@ -1,0 +1,63 @@
+// 로컬 개발용 SQLite 데이터소스입니다. CLAUDE.md 1장에는 PostgreSQL이 확정 스택으로 명시되어
+// 있으나, 이 환경에 별도 Postgres 서버가 없어 인프라 없이 바로 실행 가능하도록 SQLite로
+// 대체했습니다. 운영 배포 시 DATABASE_URL과 provider를 "postgresql"로 교체하세요.
+// (SQLite는 네이티브 enum을 지원하지 않아 상태값 필드는 String으로 두고, 허용 값은
+// lib/types.ts의 TypeScript 유니온 타입으로 관리합니다.)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// 검사 세션 = 1회 응시 기록. id가 결과 페이지 URL(/result/[resultId])로 쓰이므로
+/// 반드시 추측 불가능한 UUID로 발급합니다 (PRD 7.5).
+model TestSession {
+  id String @id @default(uuid())
+
+  /// 'in_progress' | 'completed' | 'abandoned' (lib/types.ts의 TestSessionStatus)
+  status String @default("completed")
+
+  /// 완료 시 산출되는 4자리 유형 코드. 예: "INFP"
+  resultTypeCode String? @map("result_type_code")
+
+  eiScore Int @map("ei_score")
+  snScore Int @map("sn_score")
+  tfScore Int @map("tf_score")
+  jpScore Int @map("jp_score")
+
+  eiRatio Int @map("ei_ratio")
+  snRatio Int @map("sn_ratio")
+  tfRatio Int @map("tf_ratio")
+  jpRatio Int @map("jp_ratio")
+
+  /// 'mobile' | 'tablet' | 'desktop' (통계용)
+  deviceType String? @map("device_type")
+  referrer   String?
+
+  startedAt   DateTime  @default(now()) @map("started_at")
+  completedAt DateTime? @map("completed_at")
+
+  shareEvents ShareEvent[]
+
+  @@map("test_sessions")
+}
+
+/// 공유 행위 로그. 새 공유 채널을 추가할 때는 이 테이블에도 채널명을 기록합니다
+/// (CLAUDE.md 5장 — 바이럴 계수 측정용).
+model ShareEvent {
+  id String @id @default(uuid())
+
+  testSessionId String      @map("test_session_id")
+  testSession   TestSession @relation(fields: [testSessionId], references: [id])
+
+  /// 'kakao' | 'instagram' | 'x' | 'link_copy' | 'image_download' (lib/types.ts의 ShareChannel)
+  channel String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("share_events")
+}
