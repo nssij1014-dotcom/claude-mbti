@@ -18,6 +18,16 @@ PRD의 "테스트 → 결과 → 공유" 핵심 루프(P0)까지 MVP로 구현�
 - **카카오 JS 키 미설정**: `.env`의 `NEXT_PUBLIC_KAKAO_JS_KEY`가 비어 있어 카카오톡 공유는
   자동으로 Web Share API → 링크복사 폴백으로 동작합니다. 실제 키가 생기면 채워 넣으세요.
 
+배포는 `main` 푸시마다 GitHub Actions 두 개가 병렬로 돕니다.
+
+- `.github/workflows/deploy.yml` — Vercel에 실제 서비스 배포(API 라우트/동적 OG/DB 전부 동작).
+- `.github/workflows/deploy-pages.yml` — GitHub Pages용 별도 정적 배포. 빌드 전
+  `scripts/prepare-pages-export.mjs`가 `app/api/**`, `app/result/[resultId]`를 제거하고
+  `app/page.tsx`의 실시간 참여자 수(DB 조회)를 걷어낸 뒤 `next.config.ts`의
+  `GITHUB_PAGES=true` 플래그로 static export합니다. **결과 저장/공유 OG 등 핵심 기능이
+  이 배포본에서는 동작하지 않습니다** — 요청에 따라 의도적으로 받아들인 트레이드오프이니,
+  이 워크플로를 건드릴 때 핵심 기능을 되살리려 하지 마세요.
+
 새 기능을 추가하며 이 문서와 실제 코드가 어긋나면(특히 기술 스택 버전, 프로젝트 구조) 이 문서를 갱신하세요.
 
 ## 1. 기술 스택 — 임의 변경 금지
@@ -117,7 +127,12 @@ MBTI/
 │   └── types.ts                       # 공용 타입(Dimension, Answer, MbtiTypeContent 등)
 ├── prisma/
 │   └── schema.prisma                  # TestSession, ShareEvent (SQLite)
+├── scripts/
+│   └── prepare-pages-export.mjs       # GitHub Pages 빌드 전용(5장 참고), Vercel/로컬에는 미사용
 ├── test/setup.ts                      # Vitest + Testing Library 전역 설정
+├── .github/workflows/
+│   ├── deploy.yml                     # Vercel 배포(main 푸시마다)
+│   └── deploy-pages.yml               # GitHub Pages 정적 배포(main 푸시마다)
 ├── public/
 ├── MBTI_PRD.md
 └── CLAUDE.md

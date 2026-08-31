@@ -3,9 +3,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCompatibility, type RelationType } from "@/lib/compatibility";
 import { Disclaimer } from "@/features/result/Disclaimer";
+import { MBTI_TYPES } from "@/lib/data/mbtiTypes";
 
 interface CompatibilityDetailPageProps {
   params: Promise<{ pair: string }>;
+}
+
+// 16유형 조합은 유한(136가지)하므로 전부 미리 생성합니다. GitHub Pages static export가
+// 이 라우트를 지원하려면 필수이며, Vercel에서도 빌드 시점에 미리 렌더링해 응답 속도를
+// 높여줍니다.
+export function generateStaticParams() {
+  const pairs: { pair: string }[] = [];
+  for (const typeA of MBTI_TYPES) {
+    for (const typeB of MBTI_TYPES) {
+      if (typeA.code > typeB.code) continue;
+      pairs.push({ pair: [typeA.code, typeB.code].sort().join("-").toLowerCase() });
+    }
+  }
+  return pairs;
 }
 
 const RELATION_LABEL: Record<RelationType, string> = {
