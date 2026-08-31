@@ -26,34 +26,38 @@ export default async function TypeDetailPage({ params }: TypeDetailPageProps) {
   if (!type) notFound();
 
   return (
-    <main className="min-h-screen bg-neutral-50">
-      <section
-        className="flex flex-col items-center gap-2 px-6 pb-10 pt-14 text-center text-white"
-        style={{ background: type.themeColor }}
-      >
-        <span className="text-sm opacity-80">{type.group}</span>
-        <h1 className="text-5xl font-extrabold tracking-tight">{type.code}</h1>
-        <p className="text-xl font-semibold">{type.nickname}</p>
-        <p className="mt-2 max-w-xs text-sm opacity-90">{type.summary}</p>
+    <main className="min-h-screen bg-paper">
+      <section className="reveal flex flex-col items-center gap-3 bg-ink px-6 pt-14 pb-10 text-center text-paper">
+        <span className="flex items-center gap-2 text-xs font-semibold tracking-[0.3em] text-paper/60 uppercase">
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ background: type.themeColor }}
+            aria-hidden
+          />
+          {type.group}
+        </span>
+        <h1 className="text-6xl font-black tracking-tight">{type.code}</h1>
+        <p className="bg-accent px-2 py-0.5 text-lg font-bold text-ink">{type.nickname}</p>
+        <p className="mt-2 max-w-xs text-sm text-paper/80">{type.summary}</p>
       </section>
 
-      <section className="mx-auto max-w-md space-y-3 px-6 py-8">
-        <h2 className="text-lg font-bold">이런 사람이에요</h2>
-        <p className="leading-relaxed text-neutral-700">{type.description}</p>
+      <section className="mx-auto max-w-md space-y-3 px-6 py-10">
+        <h2 className="text-xl font-black tracking-tight text-ink">이런 사람이에요</h2>
+        <p className="leading-relaxed text-ink-soft">{type.description}</p>
       </section>
 
-      <section className="mx-auto grid max-w-md grid-cols-1 gap-4 px-6 py-8 sm:grid-cols-2">
+      <section className="mx-auto grid max-w-md grid-cols-1 gap-8 border-t border-line px-6 py-10 sm:grid-cols-2">
         <div>
-          <h3 className="mb-2 font-bold text-neutral-900">강점</h3>
-          <ul className="space-y-1 text-sm text-neutral-700">
+          <h3 className="mb-3 text-sm font-bold tracking-[0.2em] text-ink uppercase">강점</h3>
+          <ul className="space-y-1.5 text-sm text-ink-soft">
             {type.strengths.map((s) => (
               <li key={s}>+ {s}</li>
             ))}
           </ul>
         </div>
         <div>
-          <h3 className="mb-2 font-bold text-neutral-900">약점</h3>
-          <ul className="space-y-1 text-sm text-neutral-700">
+          <h3 className="mb-3 text-sm font-bold tracking-[0.2em] text-ink uppercase">약점</h3>
+          <ul className="space-y-1.5 text-sm text-ink-soft">
             {type.weaknesses.map((w) => (
               <li key={w}>- {w}</li>
             ))}
@@ -61,23 +65,24 @@ export default async function TypeDetailPage({ params }: TypeDetailPageProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-md space-y-4 px-6 py-8">
+      <section className="mx-auto max-w-md space-y-6 border-t border-line px-6 py-10">
         <div>
-          <h3 className="mb-1 font-bold text-neutral-900">연애 스타일</h3>
-          <p className="text-sm leading-relaxed text-neutral-700">{type.loveStyle}</p>
+          <h3 className="mb-1 text-sm font-bold tracking-[0.2em] text-ink uppercase">
+            연애 스타일
+          </h3>
+          <p className="text-sm leading-relaxed text-ink-soft">{type.loveStyle}</p>
         </div>
         <div>
-          <h3 className="mb-1 font-bold text-neutral-900">직장/학업 스타일</h3>
-          <p className="text-sm leading-relaxed text-neutral-700">{type.workStyle}</p>
+          <h3 className="mb-1 text-sm font-bold tracking-[0.2em] text-ink uppercase">
+            직장/학업 스타일
+          </h3>
+          <p className="text-sm leading-relaxed text-ink-soft">{type.workStyle}</p>
         </div>
         <div>
-          <h3 className="mb-1 font-bold text-neutral-900">추천 직업</h3>
+          <h3 className="mb-2 text-sm font-bold tracking-[0.2em] text-ink uppercase">추천 직업</h3>
           <div className="flex flex-wrap gap-2">
             {type.recommendedJobs.map((job) => (
-              <span
-                key={job}
-                className="rounded-full bg-neutral-200 px-3 py-1 text-xs text-neutral-700"
-              >
+              <span key={job} className="border border-line px-3 py-1 text-xs text-ink-soft">
                 {job}
               </span>
             ))}
@@ -85,10 +90,10 @@ export default async function TypeDetailPage({ params }: TypeDetailPageProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-md px-6 py-8 text-center">
+      <section className="mx-auto max-w-md border-t border-line px-6 py-10 text-center">
         <Link
           href="/test"
-          className="inline-block rounded-full bg-neutral-900 px-6 py-3 text-sm font-semibold text-white"
+          className="inline-block bg-ink px-6 py-3 text-sm font-bold text-paper transition-colors hover:bg-accent hover:text-ink"
         >
           나도 테스트 해보기
         </Link>

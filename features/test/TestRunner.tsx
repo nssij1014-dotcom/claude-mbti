@@ -74,24 +74,24 @@ export function TestRunner() {
 
   if (isComplete) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
+      <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 py-24 text-center">
         {error ? (
           <>
-            <p className="text-neutral-600">{error}</p>
+            <p className="text-ink-soft">{error}</p>
             <button
               onClick={() => {
                 submittedRef.current = true;
                 void submitAnswers();
               }}
-              className="min-h-11 rounded-full bg-neutral-900 px-6 text-white"
+              className="min-h-11 bg-ink px-6 font-bold text-paper transition-colors hover:bg-accent hover:text-ink"
             >
               다시 시도하기
             </button>
           </>
         ) : (
           <>
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-900" />
-            <p className="text-lg font-medium">결과를 계산하고 있어요…</p>
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-ink" />
+            <p className="text-lg font-bold tracking-tight">결과를 계산하고 있어요…</p>
           </>
         )}
       </div>
@@ -102,22 +102,22 @@ export function TestRunner() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="sticky top-0 z-10 flex items-center gap-3 bg-neutral-50/95 px-4 py-3 backdrop-blur">
+      <div className="sticky top-0 z-10 flex items-center gap-4 bg-paper/95 px-5 py-4 backdrop-blur">
         <button
           onClick={goToPrevious}
           disabled={currentIndex === 0}
           aria-label="이전 문항으로"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl disabled:opacity-30"
+          className="flex h-11 w-11 shrink-0 items-center justify-center text-xl text-ink disabled:opacity-25"
         >
           ←
         </button>
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-200">
+        <div className="h-[3px] flex-1 overflow-hidden bg-line">
           <div
-            className="h-full rounded-full bg-neutral-900 transition-all duration-300"
+            className="h-full bg-accent transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <span className="w-14 shrink-0 text-right text-sm text-neutral-500">
+        <span className="w-14 shrink-0 text-right text-sm font-semibold text-ink-soft">
           {currentIndex + 1}/{TOTAL}
         </span>
       </div>
@@ -125,17 +125,17 @@ export function TestRunner() {
       <AnimatePresence mode="wait">
         <motion.div
           key={question.id}
-          initial={{ opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
-          transition={{ duration: 0.25 }}
-          className="flex flex-1 flex-col justify-center gap-8 px-6 py-10"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="flex flex-1 flex-col justify-center gap-10 px-6 py-10"
         >
-          <p className="text-center text-[18px] font-semibold leading-relaxed text-neutral-900 sm:text-xl">
+          <p className="text-center text-2xl leading-snug font-black tracking-tight text-ink sm:text-3xl">
             {question.content}
           </p>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col">
             {([1, 2, 3, 4, 5] as LikertValue[]).map((value) => {
               const selected = pendingValue === value;
               return (
@@ -143,12 +143,17 @@ export function TestRunner() {
                   key={value}
                   onClick={() => handleSelect(value)}
                   disabled={pendingValue !== null}
-                  className={`min-h-11 rounded-2xl border px-5 py-3 text-left text-base transition-colors ${
+                  className={`flex min-h-11 items-center gap-4 border-b border-line px-2 py-4 text-left text-base font-semibold transition-colors ${
                     selected
-                      ? "border-neutral-900 bg-neutral-900 text-white"
-                      : "border-neutral-200 bg-white text-neutral-800 active:bg-neutral-100"
+                      ? "bg-ink text-paper"
+                      : "text-ink hover:bg-accent/40 disabled:hover:bg-transparent"
                   }`}
                 >
+                  <span
+                    className={`text-xs font-bold ${selected ? "text-paper/60" : "text-ink-soft"}`}
+                  >
+                    0{value}
+                  </span>
                   {LIKERT_LABELS[value]}
                 </button>
               );

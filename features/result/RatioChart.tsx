@@ -5,7 +5,6 @@ import { DIMENSIONS, NEGATIVE_LETTER, POSITIVE_LETTER, type Dimension } from "@/
 
 interface RatioChartProps {
   ratios: Record<Dimension, number>;
-  themeColor: string;
 }
 
 const DIMENSION_LABEL: Record<Dimension, string> = {
@@ -15,8 +14,11 @@ const DIMENSION_LABEL: Record<Dimension, string> = {
   JP: "판단 · 인식",
 };
 
+const INK = "#17150f";
+const LINE = "#e4dfcf";
+
 /** 지표별 성향 비율을 가로 막대로 시각화합니다 (PRD 3.2). */
-export function RatioChart({ ratios, themeColor }: RatioChartProps) {
+export function RatioChart({ ratios }: RatioChartProps) {
   const data = DIMENSIONS.map((dimension) => ({
     dimension,
     label: DIMENSION_LABEL[dimension],
@@ -30,7 +32,7 @@ export function RatioChart({ ratios, themeColor }: RatioChartProps) {
     <div className="flex flex-col gap-4">
       {data.map((row) => (
         <div key={row.dimension}>
-          <div className="mb-1 flex justify-between text-sm text-neutral-500">
+          <div className="mb-1.5 flex justify-between text-sm font-semibold text-ink-soft">
             <span>{row.label}</span>
             <span>
               {row.positiveLetter} {row.positive}% · {row.negativeLetter} {row.negative}%
@@ -44,32 +46,24 @@ export function RatioChart({ ratios, themeColor }: RatioChartProps) {
             >
               <XAxis type="number" domain={[0, 100]} hide />
               <YAxis type="category" dataKey="dimension" hide />
-              <Bar
-                dataKey="positive"
-                stackId="ratio"
-                radius={[8, 0, 0, 8]}
-                isAnimationActive={false}
-              >
-                <Cell fill={themeColor} />
+              <Bar dataKey="positive" stackId="ratio" isAnimationActive={false}>
+                <Cell fill={INK} />
                 <LabelList
                   dataKey="positiveLetter"
                   position="insideLeft"
-                  fill="#fff"
+                  fill="#f7f4ec"
                   fontSize={12}
+                  fontWeight={700}
                 />
               </Bar>
-              <Bar
-                dataKey="negative"
-                stackId="ratio"
-                radius={[0, 8, 8, 0]}
-                isAnimationActive={false}
-              >
-                <Cell fill="#e5e5e5" />
+              <Bar dataKey="negative" stackId="ratio" isAnimationActive={false}>
+                <Cell fill={LINE} />
                 <LabelList
                   dataKey="negativeLetter"
                   position="insideRight"
-                  fill="#525252"
+                  fill="#5b5646"
                   fontSize={12}
+                  fontWeight={700}
                 />
               </Bar>
             </BarChart>

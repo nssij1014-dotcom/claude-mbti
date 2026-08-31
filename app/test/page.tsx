@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function TestPage() {
   return (
-    <main className="flex min-h-screen flex-col bg-neutral-50">
+    <main className="flex min-h-screen flex-col bg-paper">
       <TestRunner />
     </main>
   );

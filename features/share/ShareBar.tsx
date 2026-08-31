@@ -82,9 +82,9 @@ export function ShareBar({ testSessionId, title, description }: ShareBarProps) {
   }
 
   return (
-    <div className="sticky bottom-0 z-20 border-t border-neutral-200 bg-white/95 px-4 py-3 backdrop-blur">
+    <div className="sticky bottom-0 z-20 border-t border-ink bg-paper/95 px-4 py-3 backdrop-blur">
       {toast && (
-        <div className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 rounded-full bg-neutral-900 px-4 py-2 text-sm text-white shadow-lg">
+        <div className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 bg-ink px-4 py-2 text-sm font-semibold text-paper shadow-lg">
           {toast}
         </div>
       )}
@@ -112,12 +112,12 @@ function ShareButton({
     <button
       onClick={onClick}
       aria-label={label}
-      className="flex min-h-11 min-w-11 flex-1 flex-col items-center gap-0.5 rounded-xl px-1 py-1.5 text-neutral-700 active:bg-neutral-100"
+      className="flex min-h-11 min-w-11 flex-1 flex-col items-center gap-0.5 px-1 py-1.5 text-ink transition-colors hover:bg-accent/40 active:bg-accent/60"
     >
       <span className="text-xl" aria-hidden>
         {emoji}
       </span>
-      <span className="text-[11px]">{label}</span>
+      <span className="text-[11px] font-semibold">{label}</span>
     </button>
   );
 }

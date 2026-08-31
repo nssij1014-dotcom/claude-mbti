@@ -4,7 +4,7 @@
  */
 export function Disclaimer() {
   return (
-    <p className="px-6 py-8 text-center text-xs leading-relaxed text-neutral-400">
+    <p className="border-t border-line px-6 py-8 text-center text-xs leading-relaxed text-ink-soft">
       본 테스트는 재미를 위한 자가진단 콘텐츠이며, 공식 심리검사를 대체하지 않습니다. 공식
       MBTI(Myers-Briggs Type Indicator®)와는 무관한 자체 제작 콘텐츠입니다.
     </p>

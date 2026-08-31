@@ -1,11 +1,23 @@
 @import "tailwindcss";
 
+/* 에디토리얼 미니멀 팔레트: 오프화이트 배경 + 잉크 블랙 글자 + 파스텔 옐로우 포인트.
+   16유형 고유 themeColor는 배경 전체를 채우지 않고 작은 스와치/포인트로만 사용해
+   이 3색 체계를 항상 유지합니다. */
 :root {
-  --background: #fafaf9;
-  --foreground: #171717;
+  --background: #f7f4ec;
+  --foreground: #17150f;
+  --color-ink-soft: #5b5646;
+  --color-line: #e4dfcf;
+  --color-accent: #f0de6a;
+  --color-accent-ink: #17150f;
 }
 
 @theme inline {
+  --color-paper: #f7f4ec;
+  --color-ink: #17150f;
+  --color-ink-soft: #5b5646;
+  --color-line: #e4dfcf;
+  --color-accent: #f0de6a;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans:
@@ -18,4 +30,26 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+/* 절제된 등장 효과: 호버 외 유일한 움직임으로, 진입 시 살짝 떠오르며 나타납니다. */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  animation: reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+  }
 }

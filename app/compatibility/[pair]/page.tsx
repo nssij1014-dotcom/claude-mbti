@@ -60,44 +60,42 @@ export default async function CompatibilityDetailPage({ params }: CompatibilityD
   const { typeA, typeB, score, relationType, highlights, tip } = result;
 
   return (
-    <main className="min-h-screen bg-neutral-50 pb-16">
-      <section className="flex flex-col items-center gap-3 px-6 pb-10 pt-14 text-center">
+    <main className="min-h-screen bg-paper pb-16">
+      <section className="reveal flex flex-col items-center gap-4 bg-ink px-6 pt-14 pb-10 text-center text-paper">
         <div className="flex items-center gap-4">
           <TypeBadge code={typeA.code} color={typeA.themeColor} />
-          <span className="text-2xl">×</span>
+          <span className="text-2xl text-paper/50">×</span>
           <TypeBadge code={typeB.code} color={typeB.themeColor} />
         </div>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-paper/70">
           {typeA.nickname} · {typeB.nickname}
         </p>
-        <p className="text-4xl font-extrabold text-neutral-900">{score}점</p>
-        <span className="rounded-full bg-neutral-900 px-4 py-1 text-sm font-semibold text-white">
+        <p className="text-5xl font-black tracking-tight">{score}점</p>
+        <span className="bg-accent px-4 py-1 text-sm font-bold text-ink">
           {RELATION_LABEL[relationType]}
         </span>
       </section>
 
-      <section className="mx-auto max-w-md space-y-3 px-6 py-6">
-        <h2 className="text-lg font-bold">이런 점이 궁금해요</h2>
-        <ul className="space-y-2 text-sm leading-relaxed text-neutral-700">
+      <section className="mx-auto max-w-md space-y-3 px-6 py-10">
+        <h2 className="text-xl font-black tracking-tight text-ink">이런 점이 궁금해요</h2>
+        <ul className="space-y-2 text-sm leading-relaxed text-ink-soft">
           {highlights.map((h) => (
-            <li key={h} className="rounded-xl bg-white px-4 py-3 shadow-sm">
+            <li key={h} className="border border-line px-4 py-3">
               {h}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="mx-auto max-w-md space-y-2 px-6 py-6">
-        <h2 className="text-lg font-bold">관계 팁</h2>
-        <p className="rounded-xl bg-white px-4 py-3 text-sm leading-relaxed text-neutral-700 shadow-sm">
-          {tip}
-        </p>
+      <section className="mx-auto max-w-md space-y-2 border-t border-line px-6 py-10">
+        <h2 className="text-xl font-black tracking-tight text-ink">관계 팁</h2>
+        <p className="border border-line px-4 py-3 text-sm leading-relaxed text-ink-soft">{tip}</p>
       </section>
 
-      <section className="mx-auto max-w-md px-6 py-6 text-center">
+      <section className="mx-auto max-w-md border-t border-line px-6 py-10 text-center">
         <Link
           href="/compatibility"
-          className="inline-block text-sm font-semibold text-neutral-900 underline"
+          className="inline-block text-sm font-bold text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
         >
           다른 유형과 궁합 보기
         </Link>
@@ -110,10 +108,8 @@ export default async function CompatibilityDetailPage({ params }: CompatibilityD
 
 function TypeBadge({ code, color }: { code: string; color: string }) {
   return (
-    <div
-      className="flex h-16 w-16 items-center justify-center rounded-full text-sm font-extrabold text-white"
-      style={{ background: color }}
-    >
+    <div className="flex h-16 w-16 flex-col items-center justify-center gap-1 border border-paper/30 text-sm font-black">
+      <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} aria-hidden />
       {code}
     </div>
   );
