@@ -58,7 +58,7 @@ content = replaceOrThrow(
 content = replaceOrThrow(
   content,
   `          {participantCount > 0 && (
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-ink-soft">
               지금까지 {participantCount.toLocaleString()}명이 참여했어요
             </p>
           )}
