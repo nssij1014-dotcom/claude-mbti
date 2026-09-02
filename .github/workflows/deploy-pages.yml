@@ -1,7 +1,8 @@
 name: GitHub Pages Deployment
 
 # API 라우트/DB 기반 라우트를 제외한 static export만 배포합니다.
-# 실제 서비스(API, 동적 OG, 테스트 결과 저장)는 deploy.yml(Vercel)이 담당합니다.
+# 결과 저장/공유 OG/구글 로그인 등 핵심 기능은 이 배포본에서 동작하지 않습니다.
+# Vercel 자동배포는 제거했고(2026-09-02), 현재 이 정적 배포가 유일한 배포 파이프라인입니다.
 on:
   push:
     branches:

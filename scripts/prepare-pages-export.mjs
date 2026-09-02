@@ -1,6 +1,6 @@
-// GitHub Pages(static export) 빌드 전용 스크립트입니다. Vercel 빌드나 로컬 개발에는
-// 사용하지 않습니다 — GitHub Actions의 Pages 워크플로가 체크아웃한 임시 작업 트리에서만
-// 실행되므로, 실제 저장소 소스나 Vercel 배포에는 영향을 주지 않습니다.
+// GitHub Pages(static export) 빌드 전용 스크립트입니다. 로컬 개발에는 사용하지 않습니다 —
+// GitHub Actions의 Pages 워크플로가 체크아웃한 임시 작업 트리에서만 실행되므로, 실제
+// 저장소 소스에는 영향을 주지 않습니다.
 //
 // GitHub Pages는 정적 파일만 서빙할 수 있어 아래 기능은 지원할 수 없습니다:
 //   - app/api/** (DB 기반 API 라우트, 구글 로그인 NextAuth 라우트 포함)

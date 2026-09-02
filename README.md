@@ -51,7 +51,7 @@
 | 공유 카드 이미지 | Next.js 내장 `next/og`      |
 | ORM/DB           | Prisma 6 + SQLite(로컬 개발)|
 | 테스트           | Vitest + Testing Library    |
-| 배포             | Vercel(운영) / GitHub Pages(정적 미러) |
+| 배포             | GitHub Pages(정적 미러만 지원, 운영 배포처는 아직 없음) |
 
 버전/도입 배경에 대한 더 자세한 설명(예: 왜 SQLite인지, 왜 `@vercel/og`가 아닌지)은
 [`CLAUDE.md`의 1장](CLAUDE.md)을 참고하세요.
@@ -204,22 +204,22 @@ npm run dev
 
 ## 배포
 
-`main` 브랜치 푸시마다 GitHub Actions 두 개가 병렬로 실행됩니다.
+`main` 브랜치 푸시마다 GitHub Actions가 GitHub Pages에 정적 미러를 배포합니다.
 
-- **[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)** — Vercel에 실서비스로
-  배포합니다. API 라우트/동적 OG 이미지/DB 저장이 모두 정상 동작하는 배포본입니다.
-  (필요한 저장소 시크릿: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`)
-- **[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)** — GitHub
-  Pages용 정적 미러를 배포합니다. 빌드 전
+- **[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)** — 빌드 전
   [`scripts/prepare-pages-export.mjs`](scripts/prepare-pages-export.mjs)가 `app/api/**`,
   `app/result/[resultId]`, 랜딩의 실시간 참여자 수 코드를 제거한 뒤 static export합니다.
-  **이 배포본에서는 결과 저장/공유 OG 등 핵심 기능이 동작하지 않습니다** — 데모/미러 용도로
-  의도된 트레이드오프입니다. 실제 서비스는 항상 Vercel 배포본을 기준으로 확인하세요.
+  **이 배포본에서는 결과 저장/공유 OG/구글 로그인 등 핵심 기능이 동작하지 않습니다** —
+  데모/미러 용도로 의도된 트레이드오프입니다.
+- **Vercel 자동배포는 제거했습니다.** 원래 `deploy.yml`로 Vercel에 실서비스를 배포할
+  계획이었지만 배포가 계속 실패해 걷어냈습니다(2026-09-02). 현재는 테스트→결과→공유
+  핵심 루프가 실제로 동작하는 라이브 배포처가 없고, `npm run dev` 로컬 실행 또는
+  `npm run build && npm run start`로만 전체 기능을 확인할 수 있습니다.
 
 ## 현재 알려진 제한사항
 
 - **관리자 CMS 없음**: 문항과 16유형 콘텐츠는 정적 TypeScript 데이터(`lib/data/`)입니다.
-- **소셜 로그인/마이페이지 없음**: 비회원 전용이며, 로그인은 핵심 플로우의 필수 조건이 아닙니다.
+- **구글 로그인만 구현, 마이페이지 없음**: 로그인은 항상 선택 사항이며 핵심 플로우의 필수 조건이 아닙니다.
 - **DB가 PostgreSQL이 아니라 SQLite**: 로컬 실행을 쉽게 하기 위한 임시 대체이며, 운영 배포
   전 Postgres로 교체가 필요합니다.
 - **카카오 JS 키 미설정**: 값을 채우기 전까지 카카오톡 공유는 Web Share API/링크복사로

@@ -10,8 +10,7 @@ interface CompatibilityDetailPageProps {
 }
 
 // 16유형 조합은 유한(136가지)하므로 전부 미리 생성합니다. GitHub Pages static export가
-// 이 라우트를 지원하려면 필수이며, Vercel에서도 빌드 시점에 미리 렌더링해 응답 속도를
-// 높여줍니다.
+// 이 라우트를 지원하려면 필수이며, 빌드 시점에 미리 렌더링해 응답 속도도 높여줍니다.
 export function generateStaticParams() {
   const pairs: { pair: string }[] = [];
   for (const typeA of MBTI_TYPES) {

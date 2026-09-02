@@ -27,15 +27,18 @@ PRD의 "테스트 → 결과 → 공유" 핵심 루프(P0)까지 MVP로 구현�
   Google Cloud Console에서 OAuth 클라이언트를 발급받아 채우세요. 로그인은 항상 선택
   사항이므로 이 값이 없어도 테스트~결과~공유 핵심 플로우에는 영향이 없습니다.
 
-배포는 `main` 푸시마다 GitHub Actions 두 개가 병렬로 돕니다.
+배포는 `main` 푸시마다 GitHub Actions가 GitHub Pages에 정적 배포합니다.
 
-- `.github/workflows/deploy.yml` — Vercel에 실제 서비스 배포(API 라우트/동적 OG/DB 전부 동작).
-- `.github/workflows/deploy-pages.yml` — GitHub Pages용 별도 정적 배포. 빌드 전
-  `scripts/prepare-pages-export.mjs`가 `app/api/**`, `app/result/[resultId]`를 제거하고
-  `app/page.tsx`의 실시간 참여자 수(DB 조회)를 걷어낸 뒤 `next.config.ts`의
-  `GITHUB_PAGES=true` 플래그로 static export합니다. **결과 저장/공유 OG 등 핵심 기능이
-  이 배포본에서는 동작하지 않습니다** — 요청에 따라 의도적으로 받아들인 트레이드오프이니,
-  이 워크플로를 건드릴 때 핵심 기능을 되살리려 하지 마세요.
+- `.github/workflows/deploy-pages.yml` — 빌드 전 `scripts/prepare-pages-export.mjs`가
+  `app/api/**`, `app/result/[resultId]`를 제거하고 `app/page.tsx`의 실시간 참여자 수
+  (DB 조회)를 걷어낸 뒤 `next.config.ts`의 `GITHUB_PAGES=true` 플래그로 static export합니다.
+  **결과 저장/공유 OG/구글 로그인 등 핵심 기능이 이 배포본에서는 동작하지 않습니다** —
+  의도적으로 받아들인 트레이드오프이니, 이 워크플로를 건드릴 때 핵심 기능을 되살리려
+  하지 마세요.
+- **Vercel 자동배포는 제거했습니다**(`.github/workflows/deploy.yml` 삭제, 2026-09-02) —
+  실행마다 계속 실패해 사용자 요청으로 걷어냈습니다. 현재 이 저장소에는 테스트~결과~공유
+  핵심 루프가 실제로 동작하는 라이브 배포처가 없습니다. 필요해지면 배포 전략을 다시
+  논의하고 이 문서를 갱신하세요.
 
 새 기능을 추가하며 이 문서와 실제 코드가 어긋나면(특히 기술 스택 버전, 프로젝트 구조) 이 문서를 갱신하세요.
 
@@ -56,7 +59,7 @@ PRD 6장에서 확정한 스택입니다. 더 나은 대안이 떠오르더라�
 | 인증             | Auth.js(NextAuth) 5 + Google Provider | JWT 세션 전략. PRD 7.3의 User 테이블(provider/providerId만으로 식별, 이메일 미수집)에 맞춰 기본 Prisma 어댑터 대신 `lib/auth.ts`의 signIn/jwt 콜백에서 직접 upsert. 카카오 Provider는 PRD에 있으나 아직 미구현 |
 | DB               | SQLite + Prisma 6.19.3        | **PRD/원래 계획은 PostgreSQL.** 로컬에 별도 Postgres 서버가 없어 인프라 없이 바로 실행되도록 SQLite로 대체. 운영 배포 전 `prisma/schema.prisma`의 `datasource`를 `postgresql`로, `DATABASE_URL`을 Postgres 연결 문자열로 교체할 것. Prisma는 8.x가 `latest` 태그이지만 스키마 설정 방식이 크게 바뀐 RC라 6.x 안정판에 고정함 |
 | 캐시/세션        | 미구현                        | Redis는 트래픽이 실제로 문제가 될 때 도입 — 현재는 SQLite/localStorage로 충분                                         |
-| 배포             | 미구현                        | Vercel 단일 배포가 원래 계획                                                                                          |
+| 배포             | GitHub Pages(정적 미러만)     | PRD/원래 계획은 Vercel 단일 배포였으나 자동배포가 계속 실패해 제거함(2026-09-02, 0장 참고). 핵심 기능이 동작하는 실제 서비스 배포처는 아직 없음 |
 
 - 새 라이브러리는 "실제로 필요해졌을 때"만 추가합니다. 특히 상태관리·데이터페칭 라이브러리를 중복으로 얹지 않기(Zustand 하나로 충분).
 - Prisma를 8.x로 올릴 때는 `datasource url` 방식이 아니라 `prisma.config.ts` + driver adapter 방식으로 바뀌므로 마이그레이션 가이드를 먼저 확인하세요.
@@ -142,11 +145,10 @@ MBTI/
 ├── prisma/
 │   └── schema.prisma                  # User, TestSession, ShareEvent (SQLite)
 ├── scripts/
-│   └── prepare-pages-export.mjs       # GitHub Pages 빌드 전용(5장 참고), Vercel/로컬에는 미사용
+│   └── prepare-pages-export.mjs       # GitHub Pages 빌드 전용(5장 참고), 로컬 개발에는 미사용
 ├── test/setup.ts                      # Vitest + Testing Library 전역 설정
 ├── .github/workflows/
-│   ├── deploy.yml                     # Vercel 배포(main 푸시마다)
-│   └── deploy-pages.yml               # GitHub Pages 정적 배포(main 푸시마다)
+│   └── deploy-pages.yml               # GitHub Pages 정적 배포(main 푸시마다) — 유일한 배포 파이프라인
 ├── public/
 ├── MBTI_PRD.md
 └── CLAUDE.md
