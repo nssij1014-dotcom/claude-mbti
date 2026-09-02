@@ -64,6 +64,9 @@ export interface ScoreResult {
   ratios: Record<Dimension, number>;
 }
 
+/** 소셜 로그인 제공자. 현재는 'google'만 실제 연동되어 있습니다(PRD 7.3). */
+export type AuthProvider = "google" | "kakao";
+
 export type TestSessionStatus = "in_progress" | "completed" | "abandoned";
 export type DeviceType = "mobile" | "tablet" | "desktop";
 export type ShareChannel = "kakao" | "instagram" | "x" | "link_copy" | "image_download";

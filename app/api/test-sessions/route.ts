@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { computeScore } from "@/lib/scoring/score";
 import { QUESTIONS } from "@/lib/data/questions";
 import type { Answer, DeviceType } from "@/lib/types";
@@ -40,6 +41,11 @@ export async function POST(request: Request) {
     ? (body.deviceType as DeviceType)
     : null;
 
+  // 로그인 상태라면 세션을 계정에 연결합니다. 비회원(authSession 없음)도 항상 정상
+  // 완료되어야 하므로 userId는 NULL을 허용합니다(CLAUDE.md 3장).
+  const authSession = await auth();
+  const userId = authSession?.user?.id ?? null;
+
   const session = await prisma.testSession.create({
     data: {
       status: "completed",
@@ -55,6 +61,7 @@ export async function POST(request: Request) {
       deviceType,
       referrer: body.referrer ?? null,
       completedAt: new Date(),
+      userId,
     },
   });
 

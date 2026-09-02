@@ -13,10 +13,19 @@ PRD의 "테스트 → 결과 → 공유" 핵심 루프(P0)까지 MVP로 구현�
 - **관리자 CMS 없음**: 문항(`lib/data/questions.ts`)과 16유형 콘텐츠(`lib/data/mbtiTypes.ts`)는
   정적 TypeScript 데이터입니다. CMS를 만들 때 이 데이터를 DB로 이관하세요.
   `prisma/schema.prisma`에는 CMS용 테이블(Question, MbtiType 등)이 아직 없습니다.
-- **소셜 로그인/마이페이지/정밀판 없음**: PRD의 P2~P3 범위라 이번 MVP에서 제외했습니다.
+- **구글 로그인만 구현, 마이페이지/정밀판은 여전히 없음**: Auth.js(NextAuth) v5 +
+  Google Provider로 선택적 소셜 로그인을 붙였습니다(`lib/auth.ts`, `features/auth/`).
+  로그인 상태면 `TestSession.userId`가 채워지지만(`prisma/schema.prisma`의 `User` 모델,
+  PRD 7.3), 히스토리 조회 UI(`/my`, PRD 3.4의 P2)는 아직 만들지 않았습니다 — 지금은
+  로그인이 계정에 세션을 연결하기만 할 뿐, 그 데이터를 보여줄 화면이 없습니다. 카카오
+  로그인은 PRD가 언급하지만 아직 미구현(Google Provider만 있음).
 - **DB는 PostgreSQL이 아니라 SQLite**: 아래 1장 참고. 운영 배포 전에 반드시 Postgres로 교체.
 - **카카오 JS 키 미설정**: `.env`의 `NEXT_PUBLIC_KAKAO_JS_KEY`가 비어 있어 카카오톡 공유는
   자동으로 Web Share API → 링크복사 폴백으로 동작합니다. 실제 키가 생기면 채워 넣으세요.
+- **구글 OAuth 자격 증명 미설정**: `.env`의 `AUTH_SECRET`/`AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET`이
+  비어 있으면 로그인 버튼은 보이지만 클릭 시 인증이 실패합니다. `.env.example` 주석대로
+  Google Cloud Console에서 OAuth 클라이언트를 발급받아 채우세요. 로그인은 항상 선택
+  사항이므로 이 값이 없어도 테스트~결과~공유 핵심 플로우에는 영향이 없습니다.
 
 배포는 `main` 푸시마다 GitHub Actions 두 개가 병렬로 돕니다.
 
@@ -44,7 +53,7 @@ PRD 6장에서 확정한 스택입니다. 더 나은 대안이 떠오르더라�
 | 애니메이션       | Framer Motion 13              | 문항 전환/결과 페이지 마이크로 인터랙션                                                                                |
 | 차트             | Recharts 3                    | 지표 비율 바 차트(`features/result/RatioChart.tsx`)                                                                    |
 | 공유 카드 이미지 | Next.js 내장 `next/og`        | PRD는 `@vercel/og`를 명시했지만 동일 엔진이 Next.js App Router에 내장되어 있어 별도 패키지 설치 없이 사용(`app/api/og`) |
-| 인증             | 미구현                        | 소셜 로그인은 P2 — 아직 붙이지 않음                                                                                    |
+| 인증             | Auth.js(NextAuth) 5 + Google Provider | JWT 세션 전략. PRD 7.3의 User 테이블(provider/providerId만으로 식별, 이메일 미수집)에 맞춰 기본 Prisma 어댑터 대신 `lib/auth.ts`의 signIn/jwt 콜백에서 직접 upsert. 카카오 Provider는 PRD에 있으나 아직 미구현 |
 | DB               | SQLite + Prisma 6.19.3        | **PRD/원래 계획은 PostgreSQL.** 로컬에 별도 Postgres 서버가 없어 인프라 없이 바로 실행되도록 SQLite로 대체. 운영 배포 전 `prisma/schema.prisma`의 `datasource`를 `postgresql`로, `DATABASE_URL`을 Postgres 연결 문자열로 교체할 것. Prisma는 8.x가 `latest` 태그이지만 스키마 설정 방식이 크게 바뀐 RC라 6.x 안정판에 고정함 |
 | 캐시/세션        | 미구현                        | Redis는 트래픽이 실제로 문제가 될 때 도입 — 현재는 SQLite/localStorage로 충분                                         |
 | 배포             | 미구현                        | Vercel 단일 배포가 원래 계획                                                                                          |
@@ -114,19 +123,24 @@ MBTI/
 │   └── api/
 │       ├── test-sessions/route.ts     # 세션 생성 + 서버 재채점(POST)
 │       ├── og/[resultId]/route.tsx    # OG 이미지 생성(next/og)
-│       └── share-events/route.ts      # 공유 로그(POST)
+│       ├── share-events/route.ts      # 공유 로그(POST)
+│       └── auth/[...nextauth]/route.ts # NextAuth 핸들러(GET/POST)
 ├── features/
 │   ├── test/                          # useTestStore(zustand), TestRunner
 │   ├── result/                        # RatioChart(recharts), Disclaimer
-│   └── share/                         # share.ts(카카오/Web Share/링크복사), ShareBar
+│   ├── share/                         # share.ts(카카오/Web Share/링크복사), ShareBar
+│   └── auth/                          # AuthProvider(SessionProvider), AuthButton
 ├── lib/
 │   ├── scoring/                       # score.ts(채점 단일 소스) + score.test.ts
 │   ├── data/                          # questions.ts, mbtiTypes.ts (정적 콘텐츠, CMS 대체)
 │   ├── compatibility.ts               # 궁합 점수/설명 생성
+│   ├── auth.ts                        # Auth.js(NextAuth) 설정 — Google Provider, JWT 세션
 │   ├── prisma.ts
 │   └── types.ts                       # 공용 타입(Dimension, Answer, MbtiTypeContent 등)
+├── types/
+│   └── next-auth.d.ts                 # next-auth Session/JWT 타입 보강
 ├── prisma/
-│   └── schema.prisma                  # TestSession, ShareEvent (SQLite)
+│   └── schema.prisma                  # User, TestSession, ShareEvent (SQLite)
 ├── scripts/
 │   └── prepare-pages-export.mjs       # GitHub Pages 빌드 전용(5장 참고), Vercel/로컬에는 미사용
 ├── test/setup.ts                      # Vitest + Testing Library 전역 설정
@@ -138,8 +152,9 @@ MBTI/
 └── CLAUDE.md
 ```
 
-아직 없음: `app/admin/**`(관리자 CMS), `app/my/page.tsx`(마이페이지 — 로그인 미구현),
-`features/admin/`. 이 기능들을 만들 때 이 구조 표를 함께 갱신하세요.
+아직 없음: `app/admin/**`(관리자 CMS), `app/my/page.tsx`(마이페이지 — 로그인은 구현됐지만
+히스토리 조회 화면은 아직 없음), `features/admin/`. 이 기능들을 만들 때 이 구조 표를 함께
+갱신하세요.
 
 `components/`, `utils/` 같은 범용 디렉터리는 실제로 여러 feature가 공유하는 코드가 생기기 전까지 만들지 않습니다.
 

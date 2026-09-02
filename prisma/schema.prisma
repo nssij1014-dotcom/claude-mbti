@@ -13,6 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// 소셜 로그인 사용자(선택 회원, PRD 7.3). 이름·연락처 등 개인정보는 수집하지 않고
+/// provider+providerId(소셜 서비스 고유 ID)만으로 식별합니다(CLAUDE.md 3장).
+model User {
+  id String @id @default(uuid())
+
+  /// 'google' | 'kakao' (lib/types.ts의 AuthProvider) — 현재는 'google'만 실제 연동
+  provider String
+
+  providerId String @map("provider_id")
+
+  nickname        String
+  profileImageUrl String? @map("profile_image_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  testSessions TestSession[]
+
+  @@unique([provider, providerId])
+  @@map("users")
+}
+
 /// 검사 세션 = 1회 응시 기록. id가 결과 페이지 URL(/result/[resultId])로 쓰이므로
 /// 반드시 추측 불가능한 UUID로 발급합니다 (PRD 7.5).
 model TestSession {
@@ -20,6 +42,11 @@ model TestSession {
 
   /// 'in_progress' | 'completed' | 'abandoned' (lib/types.ts의 TestSessionStatus)
   status String @default("completed")
+
+  /// 로그인 상태로 테스트를 완료한 경우에만 채워집니다. 비회원 세션은 NULL을 허용합니다
+  /// (CLAUDE.md 3장) — 로그인은 항상 선택 사항이며 이 값이 없다고 플로우를 막지 않습니다.
+  userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id])
 
   /// 완료 시 산출되는 4자리 유형 코드. 예: "INFP"
   resultTypeCode String? @map("result_type_code")
